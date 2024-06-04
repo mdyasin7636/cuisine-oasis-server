@@ -28,6 +28,44 @@ async function run() {
     const recipeCollection = recipeDB.collection("recipeCollection");
     const userCollection = userDB.collection("userCollection");
 
+
+    // recipe route
+    app.post("/recipes", async (req, res) => {
+      const recipesData = req.body;
+      const result = await recipeCollection.insertOne(recipesData);
+      res.send(result);
+    });
+
+    app.get("/recipes", async (req, res) => {
+      const recipesData = recipeCollection.find();
+      const result = await recipesData.toArray();
+      res.send(result);
+    })
+
+    app.get("/recipes/:id", async (req, res) => {
+      const id = req.params.id;
+      const recipesData = await recipeCollection.findOne({ _id: new ObjectId(id)});
+      res.send(recipesData);
+    })
+
+    app.patch("/recipes/:id", async (req, res) => {
+      const id = req.params.id;
+      const updatedData = req.body;
+      const result = await recipeCollection.updateOne(
+        {_id: new ObjectId(id)},
+        {$set: updatedData}
+      );
+      res.send(result);
+    })
+
+    app.delete("/recipes/:id", async (req, res) => {
+      const id = req.params.id;
+      const result = await recipeCollection.deleteOne(
+        { _id: new ObjectId(id)}
+      );
+      res.send(result);
+    })
+
     // user route
 
     app.post("/user", async (req, res) => {
