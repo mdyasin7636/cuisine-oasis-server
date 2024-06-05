@@ -1,15 +1,15 @@
 const express = require("express");
 const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
-// const jwt = require("jsonwebtoken");
+require("dotenv").config();
 const app = express();
 const cors = require("cors");
-const port = 5000;
+const port = process.env.port || 5000;
 
 app.use(cors());
 app.use(express.json());
 
 const uri =
-  "mongodb+srv://mdyasin7636:2LP1KgybXDTswOQb@cluster0.a8edxug.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
+  `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.a8edxug.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
 
 const client = new MongoClient(uri, {
   serverApi: {
@@ -41,10 +41,18 @@ async function run() {
       const result = await recipesData.toArray();
       res.send(result);
     })
+    app.get("/recipes/:email", async (req, res) => {
+      console.log(req.params.email);
+      const result = await recipeCollection
+        .find({ email: req.params.email })
+        .toArray();
+      res.send(result);
+    });
 
     app.get("/recipes/:id", async (req, res) => {
       const id = req.params.id;
       const recipesData = await recipeCollection.findOne({ _id: new ObjectId(id)});
+      console.log(recipesData);
       res.send(recipesData);
     })
 
